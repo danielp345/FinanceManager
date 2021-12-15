@@ -35,7 +35,7 @@ const checkForm = () => {
 		(nameInput.value !== "" && amountInput.value !== "",
 		categoryInput.value !== "none")
 	) {
-		console.log("git");
+		createNewTransaction();
 	} else {
 		alert("Wypełnij wszystkie pola");
 	}
@@ -52,11 +52,50 @@ const createNewTransaction = () => {
 	newTransaction.classList.add("transaction");
 	newTransaction.setAttribute("id", ID);
 
+	// nie muszę wywoływać selectCategory bo robię to w html na onchange
+	checkCategory(selectedCategory);
+
 	newTransaction.innerHTML = `
     <p class="transaction-name"> ${categoryIcon} ${nameInput.value}</p>
     <div class="transaction-amount">${amountInput.value} zł<button class="delete" onclick="deleteTransaction(${ID})"><i
                 class="fas fa-times"></i></button>
     `;
+
+	amountInput.value > 0
+		? incomeSection.appendChild(newTransaction) &&
+		  newTransaction.classList.add("income")
+		: expensesSection.appendChild(newTransaction) &&
+		  newTransaction.classList.add("expense");
+
+	moenyArray.push(parseFloat(amountInput.value));
+
+	closePanel();
+	ID++;
+	clearInputs();
+};
+
+const selectCategory = () => {
+	selectedCategory = categoryInput.options[categoryInput.selectedIndex].text;
+};
+
+const checkCategory = (transaction) => {
+	switch (transaction) {
+		case "[ + ] Przychód":
+			categoryIcon = `<i class="fas fa-money-bill-wave"></i>`;
+			break;
+
+		case "[ - ] Zakupy":
+			categoryIcon = `<i class="fas fa-cart-arrow-down"></i>`;
+			break;
+
+		case "[ - ] Jedzenie":
+			categoryIcon = `<i class="fas fa-hamburger"></i>`;
+			break;
+
+		case "[ - ] Kino":
+			categoryIcon = `<i class="fas fa-film"></i>`;
+			break;
+	}
 };
 
 addTransactionBtn.addEventListener("click", showPanel);
